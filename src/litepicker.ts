@@ -390,7 +390,7 @@ export class Litepicker extends Calendar {
 
       if (this.options.splitView) {
         const monthItem = target.closest(`.${style.monthItem}`);
-        idx = [...monthItem.parentNode.childNodes].findIndex(el => el === monthItem);
+        idx = Array.from(monthItem.parentNode.childNodes).findIndex(el => el === monthItem);
         numberOfMonths = 1;
       }
 
@@ -416,7 +416,7 @@ export class Litepicker extends Calendar {
 
       if (this.options.splitView) {
         const monthItem = target.closest(`.${style.monthItem}`);
-        idx = [...monthItem.parentNode.childNodes].findIndex(el => el === monthItem);
+        idx = Array.from(monthItem.parentNode.childNodes).findIndex(el => el === monthItem);
         numberOfMonths = 1;
       }
 
@@ -537,7 +537,7 @@ export class Litepicker extends Calendar {
         isFlipped = true;
       }
 
-      [...this.picker.querySelectorAll(`.${style.dayItem}`)].forEach((d: HTMLElement) => {
+      Array.from(this.picker.querySelectorAll(`.${style.dayItem}`)).forEach((d: HTMLElement) => {
         const date = new DateTime(d.dataset.time);
         const day = this.renderDay(date);
 
