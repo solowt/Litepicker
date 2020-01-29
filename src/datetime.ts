@@ -20,12 +20,12 @@ export class DateTime extends Date {
         let longMonths = null;
 
         if (match.includes('MMM')) {
-          shortMonths = [...Array(12).keys()]
+          shortMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
             .map(x => new Date(2019, x).toLocaleString(lang, { month: 'short' }));
         }
 
         if (match.includes('MMMM')) {
-          longMonths = [...Array(12).keys()]
+          longMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
             .map(x => new Date(2019, x).toLocaleString(lang, { month: 'long' }));
         }
 
@@ -329,12 +329,12 @@ export class DateTime extends Date {
       let longMonths = null;
 
       if (match.includes('MMM')) {
-        shortMonths = [...Array(12).keys()]
+        shortMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
           .map(x => new Date(2019, x).toLocaleString(lang, { month: 'short' }));
       }
 
       if (match.includes('MMMM')) {
-        longMonths = [...Array(12).keys()]
+        longMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
           .map(x => new Date(2019, x).toLocaleString(lang, { month: 'long' }));
       }
 
