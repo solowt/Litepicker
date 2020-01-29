@@ -162,7 +162,7 @@ export class Calendar {
 
         if (this.options.splitView) {
           const monthItem = target.closest(`.${style.monthItem}`);
-          idx = Array.from(monthItem.parentNode.childNodes).findIndex(el => el === monthItem);
+          idx = [...monthItem.parentNode.childNodes].findIndex(el => el === monthItem);
         }
 
         this.calendars[idx].setMonth(Number(target.value));
@@ -220,7 +220,7 @@ export class Calendar {
 
         if (this.options.splitView) {
           const monthItem = target.closest(`.${style.monthItem}`);
-          idx = Array.from(monthItem.parentNode.childNodes).findIndex(el => el === monthItem);
+          idx = [...monthItem.parentNode.childNodes].findIndex(el => el === monthItem);
         }
 
         this.calendars[idx].setFullYear(Number(target.value));
