@@ -1,9 +1,11 @@
-export class DateTime extends Date {
+import { CustomDate } from "./CustomDate";
+
+export class DateTime extends CustomDate {
 
   public static parseDateTime(date, format = 'YYYY-MM-DD', lang = 'en-US') {
     if (!date) return new Date(NaN);
 
-    if (date instanceof Date) return DateTime.getDateZeroTime(new Date(date));
+    if (date instanceof CustomDate) return DateTime.getDateZeroTime(new Date(date));
 
     if (/^\d{10,}$/.test(date)) return DateTime.getDateZeroTime(new Date(Number(date)));
 
@@ -20,12 +22,12 @@ export class DateTime extends Date {
         let longMonths = null;
 
         if (match.includes('MMM')) {
-          shortMonths = [...Array(12).keys()]
+          shortMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
             .map(x => new Date(2019, x).toLocaleString(lang, { month: 'short' }));
         }
 
         if (match.includes('MMMM')) {
-          longMonths = [...Array(12).keys()]
+          longMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
             .map(x => new Date(2019, x).toLocaleString(lang, { month: 'long' }));
         }
 
@@ -329,12 +331,12 @@ export class DateTime extends Date {
       let longMonths = null;
 
       if (match.includes('MMM')) {
-        shortMonths = [...Array(12).keys()]
+        shortMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
           .map(x => new Date(2019, x).toLocaleString(lang, { month: 'short' }));
       }
 
       if (match.includes('MMMM')) {
-        longMonths = [...Array(12).keys()]
+        longMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
           .map(x => new Date(2019, x).toLocaleString(lang, { month: 'long' }));
       }
 
