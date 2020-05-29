@@ -1,11 +1,14 @@
-export class DateTime extends Date {
+export class DateTime {
 
-  public static parseDateTime(date, format = 'YYYY-MM-DD', lang = 'en-US') {
+  public static parseDateTime(date: Date|DateTime|string,
+                              format: string = 'YYYY-MM-DD',
+                              lang: string = 'en-US'): Date {
     if (!date) return new Date(NaN);
 
-    if (date instanceof Date) return DateTime.getDateZeroTime(new Date(date));
+    if (date instanceof Date) return new Date(date);
+    if (date instanceof DateTime) return date.clone().getDateInstance();
 
-    if (/^\d{10,}$/.test(date)) return DateTime.getDateZeroTime(new Date(Number(date)));
+    if (/^-?\d{10,}$/.test(date)) return DateTime.getDateZeroTime(new Date(Number(date)));
 
     if (typeof date === 'string') {
       const match = format.match(/\[([^\]]+)]|Y{2,4}|M{1,4}|D{1,2}|d{1,4}/g);
@@ -19,13 +22,12 @@ export class DateTime extends Date {
         let shortMonths = null;
         let longMonths = null;
 
-        if (match.includes('MMM')) {
-          shortMonths = [...Array(12).keys()]
-            .map(x => new Date(2019, x).toLocaleString(lang, { month: 'short' }));
+        if (match.indexOf('MMM') !== -1) {
+          shortMonths = this.MONTH_JS.map(x => new Date(2019, x).toLocaleString(lang, { month: 'short' }));
         }
 
-        if (match.includes('MMMM')) {
-          longMonths = [...Array(12).keys()]
+        if (match.indexOf('MMMM') !== -1) {
+          longMonths = this.MONTH_JS
             .map(x => new Date(2019, x).toLocaleString(lang, { month: 'long' }));
         }
 
@@ -97,35 +99,96 @@ export class DateTime extends Date {
     return DateTime.getDateZeroTime(new Date(date));
   }
 
-  public static convertArray(array, format) {
+  public static convertArray(array: Array<Date| Date[]|string|string[]>,
+                             format: string): Array<DateTime | DateTime[]> {
     return array
       .map((d) => {
         if (d instanceof Array) {
-          return d.map(d1 => new DateTime(d1, format));
+          return (d as Array<Date|string>).map(d1 => new DateTime(d1, format));
         }
         return new DateTime(d, format);
       });
   }
 
-  public static getDateZeroTime(date) {
+  public static getDateZeroTime(date: Date): Date {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
   }
 
-  protected lang;
+  private static readonly MONTH_JS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
-  constructor(date = null, format = null, lang = 'en-US') {
+  protected lang: string;
+
+  private dateInstance: Date;
+
+  constructor(date: Date|DateTime|string = null, format: string = null, lang: string = 'en-US') {
     if (format) {
-      super(DateTime.parseDateTime(date, format, lang));
+      this.dateInstance = (DateTime.parseDateTime(date, format, lang));
     } else if (date) {
-      super(DateTime.parseDateTime(date));
+      this.dateInstance = (DateTime.parseDateTime(date));
     } else {
-      super(DateTime.parseDateTime(new Date()));
+      this.dateInstance = (DateTime.parseDateTime(new Date()));
     }
 
     this.lang = lang;
   }
 
-  public getWeek(firstDay) {
+  public getDateInstance(): Date {
+    return this.dateInstance;
+  }
+
+  public toLocaleString(arg0: string, arg1: Intl.DateTimeFormatOptions): string {
+    return this.dateInstance.toLocaleString(arg0, arg1);
+  }
+
+  public toDateString(): string {
+    return this.dateInstance.toDateString();
+  }
+
+  public getSeconds(): number {
+    return this.dateInstance.getSeconds();
+  }
+
+  public getDay(): number {
+    return this.dateInstance.getDay();
+  }
+
+  public getTime(): number {
+    return this.dateInstance.getTime();
+  }
+
+  public getDate(): number {
+    return this.dateInstance.getDate();
+  }
+
+  public getMonth(): number {
+    return this.dateInstance.getMonth();
+  }
+
+  public getFullYear(): number {
+    return this.dateInstance.getFullYear();
+  }
+
+  public setMonth(arg: number): number {
+    return this.dateInstance.setMonth(arg);
+  }
+
+  public setHours(hours: number = 0, minutes: number = 0, seconds: number = 0, ms: number = 0) {
+    this.dateInstance.setHours(hours, minutes, seconds, ms);
+  }
+
+  public setSeconds(arg: number): number {
+    return this.dateInstance.setSeconds(arg);
+  }
+
+  public setDate(arg: number): number {
+    return this.dateInstance.setDate(arg);
+  }
+
+  public setFullYear(arg: number): number {
+    return this.dateInstance.setFullYear(arg);
+  }
+
+  public getWeek(firstDay: number): number {
     const target = new Date(this.timestamp());
     const dayNr = (this.getDay() + (7 - firstDay)) % 7;
     target.setDate(target.getDate() - dayNr);
@@ -137,11 +200,11 @@ export class DateTime extends Date {
     return 1 + Math.ceil((startWeekday - target.getTime()) / 604800000);
   }
 
-  public clone() {
-    return new DateTime(this.getTime());
+  public clone(): DateTime {
+    return new DateTime(this.getDateInstance());
   }
 
-  public isBetween(date1, date2, inclusivity = '()') {
+  public isBetween(date1: DateTime, date2: DateTime, inclusivity = '()'): boolean {
 
     switch (inclusivity) {
       default:
@@ -159,7 +222,7 @@ export class DateTime extends Date {
     }
   }
 
-  public isBefore(date, unit = 'seconds') {
+  public isBefore(date: DateTime, unit = 'seconds'): boolean {
     switch (unit) {
       case 'second':
       case 'seconds':
@@ -174,12 +237,16 @@ export class DateTime extends Date {
       case 'months':
         return new Date(date.getFullYear(), date.getMonth(), 1).getTime()
           > new Date(this.getFullYear(), this.getMonth(), 1).getTime();
+
+      case 'year':
+      case 'years':
+        return date.getFullYear() > this.getFullYear();
     }
 
     throw new Error('isBefore: Invalid unit!');
   }
 
-  public isSameOrBefore(date, unit = 'seconds') {
+  public isSameOrBefore(date: DateTime, unit = 'seconds'): boolean {
     switch (unit) {
       case 'second':
       case 'seconds':
@@ -199,7 +266,7 @@ export class DateTime extends Date {
     throw new Error('isSameOrBefore: Invalid unit!');
   }
 
-  public isAfter(date, unit = 'seconds') {
+  public isAfter(date: DateTime, unit = 'seconds'): boolean {
     switch (unit) {
       case 'second':
       case 'seconds':
@@ -214,12 +281,16 @@ export class DateTime extends Date {
       case 'months':
         return new Date(this.getFullYear(), this.getMonth(), 1).getTime()
           > new Date(date.getFullYear(), date.getMonth(), 1).getTime();
+
+      case 'year':
+      case 'years':
+        return this.getFullYear() > date.getFullYear();
     }
 
     throw new Error('isAfter: Invalid unit!');
   }
 
-  public isSameOrAfter(date, unit = 'seconds') {
+  public isSameOrAfter(date: DateTime, unit = 'seconds'): boolean {
     switch (unit) {
       case 'second':
       case 'seconds':
@@ -239,7 +310,7 @@ export class DateTime extends Date {
     throw new Error('isSameOrAfter: Invalid unit!');
   }
 
-  public isSame(date, unit = 'seconds') {
+  public isSame(date: DateTime, unit = 'seconds'): boolean {
     switch (unit) {
       case 'second':
       case 'seconds':
@@ -259,7 +330,7 @@ export class DateTime extends Date {
     throw new Error('isSame: Invalid unit!');
   }
 
-  public add(duration, unit = 'seconds') {
+  public add(duration: number, unit = 'seconds'): DateTime {
     switch (unit) {
       case 'second':
       case 'seconds':
@@ -280,7 +351,7 @@ export class DateTime extends Date {
     return this;
   }
 
-  public subtract(duration, unit = 'seconds') {
+  public subtract(duration: number, unit = 'seconds'): DateTime {
     switch (unit) {
       case 'second':
       case 'seconds':
@@ -301,7 +372,7 @@ export class DateTime extends Date {
     return this;
   }
 
-  public diff(date, unit = 'seconds') {
+  public diff(date: DateTime, unit = 'seconds'): number {
     const oneDay = 1000 * 60 * 60 * 24;
 
     switch (unit) {
@@ -320,21 +391,20 @@ export class DateTime extends Date {
     }
   }
 
-  public format(format, lang = 'en-US') {
+  public format(format: string, lang: string = 'en-US'): string {
     let response = '';
     const match = format.match(/\[([^\]]+)]|Y{2,4}|M{1,4}|D{1,2}|d{1,4}/g);
 
     if (match) {
       let shortMonths = null;
       let longMonths = null;
-
-      if (match.includes('MMM')) {
-        shortMonths = [...Array(12).keys()]
+      if (match.indexOf('MMM') !== -1) {
+        shortMonths = DateTime.MONTH_JS
           .map(x => new Date(2019, x).toLocaleString(lang, { month: 'short' }));
       }
 
-      if (match.includes('MMMM')) {
-        longMonths = [...Array(12).keys()]
+      if (match.indexOf('MMMM')) {
+        longMonths = DateTime.MONTH_JS
           .map(x => new Date(2019, x).toLocaleString(lang, { month: 'long' }));
       }
 
@@ -386,7 +456,8 @@ export class DateTime extends Date {
     return response;
   }
 
-  private timestamp() {
+  private timestamp(): number {
     return new Date(this.getFullYear(), this.getMonth(), this.getDate(), 0, 0, 0, 0).getTime();
   }
+
 }

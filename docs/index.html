@@ -82,18 +82,14 @@
       </div>
       <div>
         <p>If you’re using a bundler, e.g. webpack, you’ll need to import Litepicker.</p>
-        <ul>
-          <li>
-            *.ts
-            <br>
-            <code>import * as Litepicker from 'litepicker';</code>
-          </li>
-          <li>
-            other
-            <br>
-            <code>import Litepicker from 'litepicker';</code>
-          </li>
-        </ul>
+        <p>
+          <code>import Litepicker from 'litepicker';</code>
+        </p>
+        <p class="text-gray">
+          <i>If you encounter errors in Typescript, try adding <code>esModuleInterop</code> to your
+            <strong>tsconfig.json</strong>. (see issue <a
+              href="https://github.com/wakirin/Litepicker/issues/53">#53</a>)</i>
+        </p>
 
         <br>
         <p>Now you can create Litepicker instance.</p>
@@ -102,6 +98,29 @@
           var picker = new Litepicker({ element: document.getElementById('litepicker') });
           &lt;/script&gt;
         </div>
+
+        <hr>
+
+        <div class="lead">
+          <a id="anchor-no-css" href="#anchor-no-css">#</a> No CSS version
+        </div>
+        <p>To prevent the inclusion of the CSS styles tag in the head, you can define a global variable before initializing Litepicker:</p>
+        <div class="code">
+          window.disableLitepickerStyles = true;
+          let picker = new Litepicker({ ... });
+        </div>
+        <br>
+
+        <p>Another way you can use version which does not include CSS styles.</p>
+        <p>
+          <code>import Litepicker from 'litepicker/dist/js/main.nocss';</code>
+        </p>
+
+        <p><strong>Non-module environments</strong></p>
+        <code>&lt;script src="https://cdn.jsdelivr.net/npm/litepicker/dist/js/main.nocss.js"&gt;&lt;/script&gt;</code>
+
+        <p><strong>CSS basic styles</strong></p>
+        <code>&lt;script src="https://cdn.jsdelivr.net/npm/litepicker/dist/css/style.css"&gt;&lt;/script&gt;</code>
       </div>
 
       <hr>
@@ -131,7 +150,7 @@
           <div id="option-parentEl">parentEl</div>
           <div class="option-type">HTMLElement</div>
           <div class="option-default">null</div>
-          <div class="option-description">Bind the datepicker to a element for end date.</div>
+          <div class="option-description">Adds the date picker to an element.</div>
 
           <div id="option-firstDay">firstDay</div>
           <div class="option-type">Number</div>
@@ -263,12 +282,18 @@
           <div id="option-minDays">minDays</div>
           <div class="option-type">Number</div>
           <div class="option-default">null</div>
-          <div class="option-description">The minimum days of the selected range.</div>
+          <div class="option-description">
+            <p>The minimum days of the selected range.</p>
+            <p>When <code>hotelMode</code> is on, minDays works like nights.</p>
+          </div>
 
           <div id="option-maxDays">maxDays</div>
           <div class="option-type">Number</div>
           <div class="option-default">null</div>
-          <div class="option-description">The maximum days of the selected range.</div>
+          <div class="option-description">
+            <p>The maximum days of the selected range.</p>
+            <p>When <code>hotelMode</code> is on, maxDays works like nights.</p>
+          </div>
 
           <div id="option-selectForward">selectForward</div>
           <div class="option-type">Boolean</div>
@@ -354,6 +379,33 @@
             <p>See demo above.</p>
           </div>
 
+          <div id="option-useResetBtn">useResetBtn</div>
+          <div class="option-type">Boolean</div>
+          <div class="option-default">false</div>
+          <div class="option-description">
+            <p>Adds a reset button to clear the current selection.</p>
+          </div>
+
+          <div id="option-autoRefresh">autoRefresh</div>
+          <div class="option-type">Boolean</div>
+          <div class="option-default">false</div>
+          <div class="option-description">
+            <p>Indicates whether the date range picker should automatically update the value of the &lt;input&gt;
+              element it's attached to at initialization and when the selected dates change.</p>
+          </div>
+
+          <div id="option-moveByOneMonth">
+            moveByOneMonth
+
+            <p class="text-gray"><small>from <strong>v1.3.0</strong></small></p>
+          </div>
+          <div class="option-type">Boolean</div>
+          <div class="option-default">false</div>
+          <div class="option-description">
+            <p>Indicates whether the date range picker should switch month one by one, instead of value of
+              <code>numberOfMonths</code>.</p>
+          </div>
+
           <div id="option-lockDaysFormat">lockDaysFormat</div>
           <div class="option-type">String</div>
           <div class="option-default">YYYY-MM-DD</div>
@@ -412,7 +464,8 @@
               </ul>
             </p>
             <p>
-              Eg: you have <code>bookedDays: [['2020-01-10', '2020-01-20']]</code>, <code>'2020-01-10'</code> is allowing to select as check-out, <code>'2020-01-20'</code> is allow to select as check-in.
+              Eg: you have <code>bookedDays: [['2020-01-10', '2020-01-20']]</code>, <code>'2020-01-10'</code> is
+              allowing to select as check-out, <code>'2020-01-20'</code> is allow to select as check-in.
             </p>
           </div>
 
@@ -451,6 +504,30 @@
             <p>Allow to select any booked days as check-out.</p>
           </div>
 
+          <div id="option-highlightedDaysFormat">
+            highlightedDaysFormat
+
+            <p class="text-gray"><small>from <strong>v1.1.4</strong></small></p>
+          </div>
+          <div class="option-type">String</div>
+          <div class="option-default">YYYY-MM-DD</div>
+          <div class="option-description">Date format for option <strong>highlightedDays</strong>.</div>
+
+          <div id="option-highlightedDays">
+            highlightedDays
+
+            <p class="text-gray"><small>from <strong>v1.1.4</strong></small></p>
+          </div>
+          <div class="option-type">Array</div>
+          <div class="option-default">[]</div>
+          <div class="option-description">
+            <p>Highlight days. Can contains array with range:</p>
+            <p>Eg: [ ['2019-01-01', '2019-01-10'], '2019-01-31' ].</p>
+            <p>Can contains Date Object or Unix Timestamp (with milliseconds) or String (must be equal to option
+              <strong>highlightedDaysFormat</strong>).</p>
+          </div>
+
+
           <div id="option-dropdowns">
             dropdowns
 
@@ -480,6 +557,7 @@
             cancel: 'Cancel',
             previousMonth: '&lt;svg .../&gt;&lt;/svg&gt;',
             nextMonth: '&lt;svg .../&gt;&lt;/svg&gt;',
+            reset: '&lt;svg .../&gt;&lt;/svg&gt;',
             }
           </div>
           <div class="option-description">Text for buttons.</div>
@@ -497,6 +575,52 @@
             <p>Keys depends on option <strong>lang</strong> (see <a
                 href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/PluralRules"
                 target="_blank">Intl.PluralRules</a>).</p>
+          </div>
+
+          <div id="option-resetBtnCallback">resetBtnCallback</div>
+          <div class="option-type">Function</div>
+          <div class="option-default">
+            null
+          </div>
+          <div class="option-description">
+            <p><code>useResetBtn</code> must be at <b>true</b>.</p>
+            <p>This function is call when the reset button is click.</p>
+            <p>By default it will call the <code>clearSelection</code> method.</p>
+          </div>
+
+          <div id="option-moduleRanges">
+            moduleRanges
+
+            <p class="text-gray"><small>from <strong>v1.3.0</strong></small></p>
+          </div>
+          <div class="option-type">Boolean|Object</div>
+          <div class="option-default">
+            null
+          </div>
+          <div class="option-description">
+            <p><strong>Works with <a href="https://github.com/wakirin/litepicker-module-ranges"
+                  target="_blank">litepicker-module-ranges</a></strong></p>
+            </p>Set predefined date ranges the user can select from. Each key is the label for the range, and its value
+            an array with two dates representing the bounds of the range.</p>
+            <p>When is <code>true</code> will use default ranges (Today, Yesterday, Last 7 Days, Last 30 Days, This
+              Month, Last Month).</p>
+            <p>You can provide your ranges and position, eg:</p>
+            <p><code>{ position: 'left', ranges: { your_ranges } }</code></p>
+          </div>
+
+          <div id="option-moduleNavKeyboard">
+            moduleNavKeyboard
+
+            <p class="text-gray"><small>from <strong>v1.3.4</strong></small></p>
+          </div>
+          <div class="option-type">Boolean|Object</div>
+          <div class="option-default">
+            null
+          </div>
+          <div class="option-description">
+            <p><strong>Works with <a href="https://github.com/wakirin/litepicker-module-navkeyboard"
+                  target="_blank">litepicker-module-navkeyboard</a></strong></p>
+            </p>Adds keyboard navigation.</p>
           </div>
         </div>
 
@@ -532,7 +656,7 @@
             <p>Trigger on select date/date range.</p>
             <p>Example: <code>onSelect: function(date1, date2) { console.log(date1, date2); }</code></p>
             <p>date1 and date2 is Date Object.</p>
-            <p>date2 is avaiable when the option <strong>singleMode</strong> is false</p>
+            <p>date2 is available when the option <strong>singleMode</strong> is false</p>
           </div>
 
           <div>onError</div>
@@ -543,6 +667,20 @@
             <p>At the moment works only with option <strong>disallowLockDaysInRange</strong>.</p>
           </div>
 
+          <div>onRender</div>
+          <div class="option-default">null</div>
+          <div class="option-description">
+            <p>Trigger after the render of the picker.</p>
+            <p>Example: <code>onRender: function(element) { console.log('picker element', element); }</code></p>
+          </div>
+
+          <div>onRenderDay</div>
+          <div class="option-default">null</div>
+          <div class="option-description">
+            <p>Trigger after rendering a day item.</p>
+            <p>Example: <code>onRenderDay: function(element) { console.log('day element', element); }</code></p>
+          </div>
+
           <div>onChangeMonth</div>
           <div class="option-default">null</div>
           <div class="option-description">
@@ -551,6 +689,28 @@
             <p>date is Date Object, idx is Number.</p>
             <p>idx is showing which calendar has change when option <strong>splitView</strong> is enabled.</p>
             <p>idx starts from 0.</p>
+          </div>
+
+          <div>onChangeYear</div>
+          <div class="option-default">null</div>
+          <div class="option-description">
+            <p>Trigger on change year.</p>
+            <p>Example: <code>onChangeYear: function(date, idx) { console.log(date, idx); }</code></p>
+            <p>date is Date Object, idx is Number.</p>
+            <p>idx is showing which calendar has change when option <strong>splitView</strong> is enabled.</p>
+            <p>idx starts from 0.</p>
+          </div>
+
+          <div>onDayHover</div>
+          <div class="option-default">null</div>
+          <div class="option-description">
+            <p>Trigger when user hovers or clicks a day item.</p>
+            <p>Example:
+              <code>onDayHover: function(date, attributes) { console.log(date, attributes); }</code>
+            </p>
+            <p><code>date</code> is the date object of the currently hovered day item.</p>
+            <p><code>attributes</code> is a string array with the day item's css classes (e.g.
+              <strong>is-start-date</strong>, <strong>is-locked</strong>, <strong>is-booked</strong>, etc.).</p>
           </div>
         </div>
 
@@ -626,6 +786,13 @@
             <p>See options <strong>bookedDays</strong> for format information.</p>
           </div>
 
+          <div>setHighlightedDays</div>
+          <div class="option-default">array</div>
+          <div class="option-description">
+            <p>Set highlighted days.</p>
+            <p>See options <strong>highlightedDays</strong> for format information.</p>
+          </div>
+
           <div>gotoDate</div>
           <div class="option-default">date, idx?</div>
           <div class="option-description">
@@ -647,12 +814,30 @@
           <div class="option-description">
             <p>Clear selection.</p>
           </div>
-          
+
           <div>destroy</div>
           <div class="option-default">-</div>
           <div class="option-description">
             <p>Destroy the picker.</p>
           </div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="lead">
+        <a id="anchor-IE11" href="#anchor-IE11">#</a> IE11
+      </div>
+      <div>
+        <p>To support IE11 you need to include polyfill <a href="https://github.com/nuxodin/ie11CustomProperties"
+            target="_blank">ie11CustomProperties</a>.</p>
+        <p>Example:</p>
+        <div class="code">
+          <span class="text-gray">&lt;--- include polyfill first ---&gt;</span>
+          &lt;script&gt;window.MSInputMethodContext && document.documentMode && document.write('&lt;script
+          src="https://cdn.jsdelivr.net/npm/ie11-custom-properties@latest/ie11CustomProperties.js"&gt;&lt;\x2fscript&gt;');&lt;/script&gt;
+          <span class="text-gray">&lt;--- then include the Litepicker library ---&gt;</span>
+          &lt;script src="https://cdn.jsdelivr.net/npm/litepicker/dist/js/main.js"&gt;&lt;/script&gt;
         </div>
       </div>
 
@@ -713,7 +898,8 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/litepicker@1.0.29/dist/js/main.js"></script>
+  <script>window.MSInputMethodContext && document.documentMode && document.write('<script src="https://cdn.jsdelivr.net/npm/ie11-custom-properties@latest/ie11CustomProperties.js"><\x2fscript>');</script>
+  <script src="https://cdn.jsdelivr.net/npm/litepicker@1.4.6/dist/js/main.js"></script>
   <script src="./js/demo.js"></script>
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <script>

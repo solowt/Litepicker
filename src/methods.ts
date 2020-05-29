@@ -4,6 +4,7 @@ import * as style from './scss/main.scss';
 import { getOrientation, isMobile } from './utils';
 
 declare module './litepicker' {
+  // tslint:disable-next-line: interface-name
   interface Litepicker {
     show(element?);
     hide();
@@ -19,8 +20,9 @@ declare module './litepicker' {
 
     setLockDays(array);
     setBookedDays(array);
+    setHighlightedDays(array);
 
-    gotoDate(date, idx);
+    gotoDate(date, idx?);
 
     setOptions(options);
 
@@ -31,6 +33,9 @@ declare module './litepicker' {
 }
 
 Litepicker.prototype.show = function (el = null) {
+  const element = el ? el : this.options.element;
+  this.triggerElement = element;
+
   if (this.options.inlineMode) {
     this.picker.style.position = 'static';
     this.picker.style.display = 'inline-block';
@@ -40,9 +45,6 @@ Litepicker.prototype.show = function (el = null) {
     this.picker.style.right = null;
     return;
   }
-
-  const element = el ? el : this.options.element;
-  this.triggerElement = element;
 
   if (this.options.scrollToDate) {
     if (this.options.startDate && (!el || el === this.options.element)) {
@@ -129,8 +131,8 @@ Litepicker.prototype.show = function (el = null) {
       leftAlt = (elBCR.right - parentBCR.right) - pickerBCR.width;
     }
   } else {
-    scrollX = window.scrollX;
-    scrollY = window.scrollY;
+    scrollX = window.scrollX || window.pageXOffset;
+    scrollY = window.scrollY || window.pageYOffset;
 
     if (top + pickerBCR.height > window.innerHeight
       && elBCR.top - pickerBCR.height > 0) {
@@ -178,21 +180,23 @@ Litepicker.prototype.hide = function () {
   }
 };
 
-Litepicker.prototype.getDate = function () {
+Litepicker.prototype.getDate = function (): Date {
   return this.getStartDate();
 };
 
-Litepicker.prototype.getStartDate = function () {
+Litepicker.prototype.getStartDate = function (): Date {
   if (this.options.startDate) {
-    return this.options.startDate.clone();
+    const castedObj = this.options.startDate.clone() as DateTime;
+    return castedObj.getDateInstance();
   }
 
   return null;
 };
 
-Litepicker.prototype.getEndDate = function () {
+Litepicker.prototype.getEndDate = function (): Date {
   if (this.options.endDate) {
-    return this.options.endDate.clone();
+    const castedObj = this.options.endDate.clone() as DateTime;
+    return castedObj.getDateInstance();
   }
 
   return null;
@@ -240,6 +244,9 @@ Litepicker.prototype.setEndDate = function (date) {
 };
 
 Litepicker.prototype.setDateRange = function (date1, date2) {
+  // stop repicking by resetting the trigger element
+  this.triggerElement = undefined;
+
   this.setStartDate(date1);
   this.setEndDate(date2);
 
@@ -273,6 +280,14 @@ Litepicker.prototype.setBookedDays = function (array) {
   this.render();
 };
 
+Litepicker.prototype.setHighlightedDays = function (array) {
+  this.options.highlightedDays = DateTime.convertArray(
+    array,
+    this.options.highlightedDaysFormat,
+  );
+  this.render();
+};
+
 Litepicker.prototype.setOptions = function (options) {
   delete options.element;
   delete options.elementEnd;
@@ -294,14 +309,22 @@ Litepicker.prototype.setOptions = function (options) {
     );
   }
 
-  this.options = { ...this.options, ...options };
+  const dropdowns = { ...this.options.dropdowns, ...options.dropdowns };
+  const buttonText = { ...this.options.buttonText, ...options.buttonText };
+  const tooltipText = { ...this.options.tooltipText, ...options.tooltipText };
 
-  if (this.options.singleMode && !(this.options.startDate instanceof Date)) {
+  this.options = { ...this.options, ...options };
+  this.options.dropdowns = { ...dropdowns };
+  this.options.buttonText = { ...buttonText };
+  this.options.tooltipText = { ...tooltipText };
+
+  if (this.options.singleMode && !(this.options.startDate instanceof DateTime)) {
     this.options.startDate = null;
     this.options.endDate = null;
   }
   if (!this.options.singleMode
-    && (!(this.options.startDate instanceof Date) || !(this.options.endDate instanceof Date))) {
+    && (!(this.options.startDate instanceof DateTime)
+      || !(this.options.endDate instanceof DateTime))) {
     this.options.startDate = null;
     this.options.endDate = null;
   }
@@ -326,6 +349,13 @@ Litepicker.prototype.setOptions = function (options) {
     this.options.bookedDays = DateTime.convertArray(
       this.options.bookedDays,
       this.options.bookedDaysFormat,
+    );
+  }
+
+  if (this.options.highlightedDays.length) {
+    this.options.highlightedDays = DateTime.convertArray(
+      this.options.highlightedDays,
+      this.options.highlightedDaysFormat,
     );
   }
 
